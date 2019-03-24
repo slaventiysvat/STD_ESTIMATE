@@ -1,0 +1,7 @@
+#gitignore trash files
+*.mp3
+*.wav
+*.docx
+*.doc
+*.odt
+*.ppt

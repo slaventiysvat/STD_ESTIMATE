@@ -1,0 +1,72 @@
+clear
+clc
+% In general, you can generate N
+% random numbers in the interval (a,b)
+% with the formula r = a + (b-a).*rand(N,1).
+
+t = [0.1  0.13  0.15  0.23  0.25  0.40  0.44  0.65  0.76  0.78  0.81];
+h = [4      -5     3    -4     5  -4.2   2.1   4.3  -3.1   5.1  -4.2];
+n = 10;
+len = 2^n;
+tt = linspace(0,1,len); 
+x = zeros(1,len);
+for j=1:11 % blocks.
+    
+  x = x + ( h(j)*(1+sign(tt-t(j)))/2 );
+  
+end
+
+x = (x * (sqrtSNR/std(x)));
+SN = 10;%в 10 раз меньше
+SQRT_SNR = std(x);
+SNR = SQRT_SNR^2;%типа единица
+STD_N = SNR/SN; %в N раз шум больше
+N = 1024;
+% Generate values from a normal distribution with mean 0
+% and standard deviation 2.
+r = STD_N.*randn(N,1);
+figure
+plot(x)
+s_n = x + r';
+figure
+plot(s_n)
+
+
+[x1,noisyx] = wnoise(1,10,2);%Генерирование сигнала с аддитивным белым Гауссовым шумом
+figure
+plot(x1)
+figure
+plot(noisyx)
+
+
+num = 64;
+x_arr = cut_signal(s_n,num);
+dct_arr = zeros(length(x_arr(:,1)),num);
+
+for i = 1:1:length(x_arr(:,1))
+    
+% dct_arr(i,:) = dct(x_arr(i,:));
+dct_arr(i,:) = DCT_ref(x_arr(i,:));
+
+end
+
+dct_arr(:,1) = [];
+dct_out_arr = zeros(1,16);
+
+for i = 1:1:length(dct_arr(:,1))
+    
+dct_out_arr(i) = median(abs( (dct_arr(i,:)) ) );
+
+end
+
+M=median(dct_out_arr);
+rezult1=M*1.483;%Результат
+Medblock=(1.483).*dct_out_arr;
+fprintf('Результат восьмого измерения = %f\n',rezult1);
+figure
+bar(Medblock)
+
+
+
+
+
